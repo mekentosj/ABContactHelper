@@ -7,8 +7,6 @@
 #import "ABGroup.h"
 #import "ABContactsHelper.h"
 
-#define CFAutorelease(obj) ({CFTypeRef _obj = (obj); (_obj == NULL) ? NULL : [(id)CFMakeCollectable(_obj) autorelease]; })
-
 @implementation ABGroup
 @synthesize record;
 
@@ -26,7 +24,14 @@
 
 + (id) groupWithRecordID: (ABRecordID) recordID
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+    NSError *err = nil;
+	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreateWithOptions(nil, (__bridge CFErrorRef *)&err));
+    
+    if (!addressBook)
+    {
+        NSLog(@"Could not create ABAddressBookRef: %@", err);
+        return nil;
+    }
 	ABRecordRef grouprec = ABAddressBookGetGroupWithRecordID(addressBook, recordID);
 	ABGroup *group = [self groupWithRecord:grouprec];
 	CFRelease(grouprec);
@@ -50,7 +55,15 @@
 
 - (BOOL) removeSelfFromAddressBook: (NSError **) error
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+    NSError *err = nil;
+	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreateWithOptions(NULL, (__bridge CFErrorRef *)&err));
+    
+    if (!addressBook)
+    {
+        NSLog(@"Could not create ABAddressBookRef: %@", err);
+        return NO;
+    }
+    
 	if (!ABAddressBookRemoveRecord(addressBook, self.record, (CFErrorRef *) error)) return NO;
 	return ABAddressBookSave(addressBook,  (CFErrorRef *) error);
 }
