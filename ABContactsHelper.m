@@ -6,6 +6,10 @@
 
 #import "ABContactsHelper.h"
 
+#ifndef CFAutorelease
+#define CFAutorelease(obj) ({CFTypeRef _obj = (obj); (_obj == NULL) ? NULL : [(id)CFMakeCollectable(_obj) autorelease]; })
+#endif
+
 @implementation ABContactsHelper
 /*
  Note: You cannot CFRelease the addressbook after CFAutorelease(ABAddressBookCreate());

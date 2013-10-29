@@ -7,6 +7,10 @@
 #import "ABContact.h"
 #import "ABContactsHelper.h"
 
+#ifndef CFAutorelease
+#define CFAutorelease(obj) ({CFTypeRef _obj = (obj); (_obj == NULL) ? NULL : [(id)CFMakeCollectable(_obj) autorelease]; })
+#endif
+
 #define FIRST_NAME_STRING	@"First Name"
 #define MIDDLE_NAME_STRING	@"Middle Name"
 #define LAST_NAME_STRING	@"Last Name"
