@@ -6,7 +6,9 @@
 
 #import "ABContactsHelper.h"
 
+#ifndef CFAutoRelease
 #define CFAutorelease(obj) ({CFTypeRef _obj = (obj); (_obj == NULL) ? NULL : [(id)CFMakeCollectable(_obj) autorelease]; })
+#endif
 
 @implementation ABContactsHelper
 /*
