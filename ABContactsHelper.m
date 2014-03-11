@@ -33,7 +33,7 @@
 + (int) contactsCount
 {
 	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
-	return ABAddressBookGetPersonCount(addressBook);
+	return (int)ABAddressBookGetPersonCount(addressBook);
 }
 
 + (int) contactsWithImageCount
@@ -61,7 +61,7 @@
 {
 	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
 	NSArray *groups = (NSArray *)ABAddressBookCopyArrayOfAllGroups(addressBook);
-	int ncount = groups.count;
+	int ncount = (int)groups.count;
 	[groups release];
 	return ncount;
 }
