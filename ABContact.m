@@ -670,10 +670,10 @@
 // No Image
 - (NSData *) baseDataRepresentation
 {
-	NSString *errorString;
+	NSError *error;
 	NSDictionary *dict = [self baseDictionaryRepresentation];
-	NSData *data = [NSPropertyListSerialization dataFromPropertyList:dict format:NSPropertyListXMLFormat_v1_0 errorDescription:&errorString];
-	if (!data) CFShow(errorString);
+    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:&error];
+	if (!data) MTLogError(@"Could not parse plist file correctly - error: %@", error);
 	return data; 
 }
 
@@ -681,10 +681,10 @@
 // With image where available
 - (NSData *) dataRepresentation
 {
-	NSString *errorString;
+	NSError *error;
 	NSDictionary *dict = [self dictionaryRepresentation];
-	NSData *data = [NSPropertyListSerialization dataFromPropertyList:dict format:NSPropertyListXMLFormat_v1_0 errorDescription:&errorString];
-	if (!data) CFShow(errorString);
+    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:&error];
+	if (!data) MTLogError(@"Could not parse plist file correctly - error: %@", error);
 	return data;
 }
 
@@ -732,11 +732,12 @@
 + (id) contactWithData: (NSData *) data
 {
 	// Otherwise handle points
-	CFStringRef errorString;
-	CFPropertyListRef plist = CFPropertyListCreateFromXMLData(kCFAllocatorDefault, (CFDataRef)data, kCFPropertyListMutableContainers, &errorString);
+	CFErrorRef error;
+    CFPropertyListFormat format;
+    CFPropertyListRef plist = CFPropertyListCreateWithData(kCFAllocatorDefault, (CFDataRef)data, kCFPropertyListMutableContainers, &format, &error);
 	if (!plist) 
 	{
-		CFShow(errorString);
+		MTLogError(@"Could not serialize NSData into plist file correctly - error: %@", error);
 		return nil;
 	}
 	
