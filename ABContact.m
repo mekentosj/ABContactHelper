@@ -670,22 +670,22 @@
 // No Image
 - (NSData *) baseDataRepresentation
 {
-	NSString *errorString;
-	NSDictionary *dict = [self baseDictionaryRepresentation];
-	NSData *data = [NSPropertyListSerialization dataFromPropertyList:dict format:NSPropertyListXMLFormat_v1_0 errorDescription:&errorString];
-	if (!data) CFShow(errorString);
-	return data; 
+    NSError *error;
+    NSDictionary *dict = [self baseDictionaryRepresentation];
+    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:&error];
+    if (!data) MTLogError(@"Could not parse plist file correctly - error: %@", error);
+    return data;
 }
 
 
 // With image where available
 - (NSData *) dataRepresentation
 {
-	NSString *errorString;
-	NSDictionary *dict = [self dictionaryRepresentation];
-	NSData *data = [NSPropertyListSerialization dataFromPropertyList:dict format:NSPropertyListXMLFormat_v1_0 errorDescription:&errorString];
-	if (!data) CFShow(errorString);
-	return data;
+    NSError *error;
+    NSDictionary *dict = [self dictionaryRepresentation];
+    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:&error];
+    if (!data) MTLogError(@"Could not parse plist file correctly - error: %@", error);
+    return data;
 }
 
 + (id) contactWithDictionary: (NSDictionary *) dict
@@ -731,18 +731,19 @@
 
 + (id) contactWithData: (NSData *) data
 {
-	// Otherwise handle points
-	CFStringRef errorString;
-	CFPropertyListRef plist = CFPropertyListCreateFromXMLData(kCFAllocatorDefault, (CFDataRef)data, kCFPropertyListMutableContainers, &errorString);
-	if (!plist) 
-	{
-		CFShow(errorString);
-		return nil;
-	}
-	
-	NSDictionary *dict = (NSDictionary *) plist;
-	[dict autorelease];
-	
-	return [self contactWithDictionary:dict];
+    // Otherwise handle points
+    CFErrorRef error;
+    CFPropertyListFormat format;
+    CFPropertyListRef plist = CFPropertyListCreateWithData(kCFAllocatorDefault, (CFDataRef)data, kCFPropertyListMutableContainers, &format, &error);
+    if (!plist)
+    {
+        MTLogError(@"Could not serialize NSData into plist file correctly - error: %@", error);
+        return nil;
+    }
+    
+    NSDictionary *dict = (NSDictionary *) plist;
+    [dict autorelease];
+    
+    return [self contactWithDictionary:dict];
 }
 @end
